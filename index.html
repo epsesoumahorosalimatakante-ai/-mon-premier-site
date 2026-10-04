@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artchille Design Pub — Motion</title>
+<style>
+@font-face{font-family:"Montserrat";src:url(assets/fonts/montserrat.woff2) format("woff2");font-weight:100 900}
+@font-face{font-family:"Bebas";src:url(assets/fonts/bebas.woff2) format("woff2")}
+:root{--red:#e30613;--red2:#ff2a2a;--ink:#0d0d0d;--gray:#6b6b6b;--paper:#f3f2ef}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"Montserrat",sans-serif}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;overflow:hidden;background:var(--ink);
+  transform:translate(-50%,-50%) scale(var(--s,1))}
+body.render #stage{left:0;top:0;transform:none}
+
+/* ---------- moteur d'animation : tout est piloté par animation-delay (--d) ---------- */
+.a{animation-duration:var(--t,.9s);animation-delay:var(--d,0s);animation-fill-mode:both;
+   animation-timing-function:cubic-bezier(.16,1,.3,1)}
+.scene{position:absolute;inset:0;opacity:0;animation:show var(--len) linear var(--start) 1 none}
+@keyframes show{0%,100%{opacity:1}}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(70px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideL{from{opacity:0;transform:translateX(-160px)}to{opacity:1;transform:none}}
+@keyframes slideR{from{opacity:0;transform:translateX(160px)}to{opacity:1;transform:none}}
+@keyframes rise{from{transform:translateY(115%)}to{transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(0)}65%{opacity:1;transform:scale(1.15)}100%{opacity:1;transform:scale(1)}}
+@keyframes blurIn{from{opacity:0;transform:scale(1.35);filter:blur(24px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes wipeX{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes printDown{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes head{0%{top:0;opacity:1}96%{opacity:1}100%{top:100%;opacity:0}}
+@keyframes unroll{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes drop{from{opacity:0;transform:translate(var(--fx,0),-900px) rotate(calc(var(--r) - 40deg))}
+                to{opacity:1;transform:translate(0,0) rotate(var(--r))}}
+@keyframes fan{from{transform:translate(0,0) rotate(0)}to{transform:translate(var(--x),var(--y)) rotate(var(--r))}}
+@keyframes circleOpen{from{clip-path:circle(0% at 50% 50%)}to{clip-path:circle(75% at 50% 50%)}}
+@keyframes blip{0%{opacity:0;transform:scale(0)}35%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(30)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}
+@keyframes zoomSlow{from{transform:scale(1)}to{transform:scale(1.08)}}
+@keyframes draw{from{stroke-dashoffset:var(--len,2000)}to{stroke-dashoffset:0}}
+@keyframes track{from{letter-spacing:.9em;opacity:0}to{letter-spacing:.32em;opacity:1}}
+@keyframes punch{0%{transform:scale(2.4);opacity:0}60%{transform:scale(.94);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes sweep{from{transform:translateX(-96%) skewX(-14deg)}to{transform:translateX(96%) skewX(-14deg)}}
+@keyframes shine{from{transform:translateX(-150%) skewX(-20deg)}to{transform:translateX(350%) skewX(-20deg)}}
+
+/* ---------- éléments communs ---------- */
+.abs{position:absolute}
+.bebas{font-family:"Bebas",sans-serif;font-weight:400;line-height:.88}
+.mask{display:block;overflow:hidden;padding-top:.12em;margin-top:-.12em}
+.mask>span{display:block}
+.red{color:var(--red)}
+.dot{position:absolute;border-radius:50%;background:var(--red)}
+.reg{position:absolute;width:70px;height:70px;border:3px solid currentColor;border-radius:50%}
+.reg::before,.reg::after{content:"";position:absolute;background:currentColor}
+.reg::before{left:50%;top:-18px;bottom:-18px;width:3px;transform:translateX(-50%)}
+.reg::after{top:50%;left:-18px;right:-18px;height:3px;transform:translateY(-50%)}
+.cmyk{display:flex;gap:14px}
+.cmyk i{width:34px;height:34px;border-radius:50%;display:block}
+.label{font-weight:700;font-size:26px;letter-spacing:.32em;text-transform:uppercase}
+.list{list-style:none}
+.list li{display:flex;align-items:center;gap:22px;font-weight:600;font-size:38px;margin:0 0 20px}
+.list li b{width:16px;height:16px;background:var(--red);transform:rotate(45deg);flex:none}
+
+/* ---------- transitions ---------- */
+.wipe{position:absolute;top:0;left:-30%;width:160%;height:100%;z-index:50;pointer-events:none;
+  animation:sweep .95s cubic-bezier(.7,0,.3,1) var(--d) both}
+.wipe.r{background:var(--red)}
+.wipe.k{background:#111;animation-duration:.95s}
+
+/* ---------- scène 1 : logo ---------- */
+#s1{background:var(--ink)}
+#s1 .paper{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,#fff 0,#f1f0ec 60%,#dcdad4 100%)}
+#s1 .logo{left:50%;top:430px;width:1000px;margin-left:-500px;margin-top:-340px}
+#s1 .logo img{width:100%;display:block}
+#s1 .tag{left:0;right:0;top:850px;text-align:center;font-weight:800;font-size:34px;color:var(--ink);text-transform:uppercase}
+#s1 .bar{left:760px;width:400px;top:920px;height:6px;background:var(--red);transform-origin:center}
+
+/* ---------- scène 2 : typo cinétique ---------- */
+#s2{background:#0b0b0b}
+#s2 .glow{position:absolute;width:1400px;height:1400px;left:260px;top:-160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(227,6,19,.35),rgba(227,6,19,0) 65%)}
+#s2 .t{left:0;right:0;text-align:center;color:#fff}
+
+/* ---------- scène 3 : grand format ---------- */
+#s3{background:linear-gradient(115deg,#151515 0,#1d1d1d 55%,#101010 100%)}
+#s3 .stripe{left:-200px;top:0;width:620px;height:1080px;background:var(--red);transform:skewX(-14deg);transform-origin:top left}
+.board{position:absolute;background:#fff;padding:16px;box-shadow:0 40px 80px rgba(0,0,0,.6)}
+.board .ad{position:relative;width:100%;height:100%;overflow:hidden}
+.board .h{position:absolute;left:-10px;right:-10px;height:8px;background:#fff;
+  box-shadow:0 0 30px 10px rgba(255,255,255,.9),0 0 60px 20px rgba(227,6,19,.6)}
+.leg{position:absolute;width:30px;background:linear-gradient(90deg,#555,#888,#444)}
+
+/* ---------- scène 4 : petit format ---------- */
+#s4{background:var(--paper)}
+#s4 .blk{right:-160px;top:0;width:1150px;height:1080px;background:#111;transform:skewX(-14deg)}
+.card{position:absolute;width:440px;height:260px;border-radius:14px;box-shadow:0 25px 50px rgba(0,0,0,.35);overflow:hidden}
+.flyer{position:absolute;box-shadow:0 30px 60px rgba(0,0,0,.35);overflow:hidden}
+
+/* ---------- scène 5 : qualités ---------- */
+#s5{background:#0b0b0b}
+.q{position:absolute;top:420px;width:390px;height:470px;background:linear-gradient(160deg,#1e1e1e,#141414);
+  border:2px solid #2a2a2a;border-radius:22px;padding:44px 34px;color:#fff;text-align:center;overflow:hidden}
+.q .ic{width:150px;height:150px;margin:0 auto 34px;border-radius:50%;border:5px solid var(--red);display:grid;place-items:center;position:relative}
+.q h3{font-family:"Bebas";font-weight:400;font-size:58px;line-height:.95;margin-bottom:16px}
+.q p{font-size:23px;line-height:1.4;color:#bdbdbd}
+.q .shine{position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent)}
+
+/* ---------- scène 6 : outro ---------- */
+#s6 .paper{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,#fff 0,#f1f0ec 60%,#d9d7d1 100%)}
+#s6 .contact{left:0;right:0;margin:auto;width:fit-content;top:880px;display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;
+  padding:22px 46px 22px 22px;border-radius:80px;font-weight:800;font-size:44px;white-space:nowrap}
+#s6 .contact .ph{width:76px;height:76px;border-radius:50%;background:var(--red);display:grid;place-items:center}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- ================= SCÈNE 1 — Logo (0s → 5.5s) ================= -->
+<section class="scene" id="s1" style="--start:0s;--len:5.5s">
+  <div class="paper a" style="animation-name:circleOpen;--d:.35s;--t:1.1s"></div>
+  <div class="dot a" style="left:935px;top:515px;width:50px;height:50px;animation-name:blip;--d:0s;--t:.9s"></div>
+  <div class="reg abs a" style="left:70px;top:70px;color:#c8c6c0;animation-name:pop;--d:1.2s;--t:.6s"></div>
+  <div class="reg abs a" style="right:70px;top:70px;color:#c8c6c0;animation-name:pop;--d:1.3s;--t:.6s"></div>
+  <div class="reg abs a" style="left:70px;bottom:70px;color:#c8c6c0;animation-name:pop;--d:1.4s;--t:.6s"></div>
+  <div class="reg abs a" style="right:70px;bottom:70px;color:#c8c6c0;animation-name:pop;--d:1.5s;--t:.6s"></div>
+  <svg class="abs" width="1920" height="1080" style="left:0;top:0">
+    <path class="a" d="M300 760 C 420 1020, 1300 1020, 1640 560" fill="none" stroke="#e30613" stroke-width="10" stroke-linecap="round"
+      style="stroke-dasharray:1700;--len:1700;animation-name:draw;--d:1s;--t:1.2s;opacity:.25"/>
+    <path class="a" d="M260 420 C 380 140, 1100 80, 1560 300" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round"
+      style="stroke-dasharray:1600;--len:1600;animation-name:draw;--d:1.1s;--t:1.2s;opacity:.15"/>
+  </svg>
+  <div class="logo abs a" style="animation-name:blurIn;--d:1.3s;--t:1.3s"><img src="assets/logo-crop.png" alt="Artchille Design Pub"></div>
+  <!-- éclaboussures d'encre (rappel du logo) -->
+  <div class="dot a" style="left:1450px;top:150px;width:46px;height:46px;animation-name:pop;--d:2.1s;--t:.5s"></div>
+  <div class="dot a" style="left:1530px;top:110px;width:24px;height:24px;animation-name:pop;--d:2.2s;--t:.5s"></div>
+  <div class="dot a" style="left:1395px;top:230px;width:20px;height:20px;animation-name:pop;--d:2.25s;--t:.5s"></div>
+  <div class="dot a" style="left:360px;top:690px;width:30px;height:30px;animation-name:pop;--d:2.3s;--t:.5s"></div>
+  <div class="dot a" style="left:310px;top:760px;width:16px;height:16px;animation-name:pop;--d:2.35s;--t:.5s"></div>
+  <div class="tag abs a" style="animation-name:track;--d:2.5s;--t:1.4s">Impression · Design · Publicité</div>
+  <div class="bar abs a" style="animation-name:growX;--d:2.9s;--t:.9s"></div>
+</section>
+
+<!-- ================= SCÈNE 2 — Typo cinétique (5.5s → 9.5s) ================= -->
+<section class="scene" id="s2" style="--start:5.5s;--len:4s">
+  <div class="glow a" style="animation-name:zoomSlow;--d:5.5s;--t:4s;animation-timing-function:linear"></div>
+  <div class="t abs bebas" style="top:150px;font-size:170px">
+    <span class="mask"><span class="a" style="animation-name:rise;--d:5.85s">Vos idées</span></span>
+  </div>
+  <div class="t abs bebas" style="top:320px;font-size:170px;color:#9a9a9a">
+    <span class="mask"><span class="a" style="animation-name:rise;--d:6.1s">prennent</span></span>
+  </div>
+  <div class="t abs bebas" style="top:470px;font-size:400px;color:var(--red)">
+    <span class="a" style="display:inline-block;animation-name:punch;--d:6.45s;--t:.7s">vie</span>
+  </div>
+  <div class="t abs" style="top:900px;font-weight:700;font-size:34px;letter-spacing:.3em;text-transform:uppercase">
+    <span class="a" style="display:inline-block;animation-name:fadeUp;--d:7.2s">Du petit au grand format</span>
+  </div>
+  <div class="abs a" style="left:810px;top:975px;width:300px;height:6px;background:var(--red);animation-name:growX;--d:7.5s"></div>
+</section>
+
+<!-- ================= SCÈNE 3 — Grand format (9.5s → 16.5s) ================= -->
+<section class="scene" id="s3" style="--start:9.5s;--len:7s">
+  <div class="stripe abs a" style="animation-name:fadeIn;--d:9.5s;--t:.1s"></div>
+  <div class="abs" style="left:110px;top:120px;color:#fff">
+    <div class="label a" style="animation-name:slideL;--d:9.9s">01 — Nos services</div>
+    <div class="bebas" style="font-size:250px;margin-top:20px">
+      <span class="mask"><span class="a" style="animation-name:rise;--d:10.05s">Grand</span></span>
+      <span class="mask"><span class="a" style="animation-name:rise;--d:10.2s">format</span></span>
+    </div>
+  </div>
+  <ul class="list abs" style="left:120px;top:640px;color:#fff">
+    <li class="a" style="animation-name:slideL;--d:11.0s"><b></b>Bâches &amp; banderoles</li>
+    <li class="a" style="animation-name:slideL;--d:11.25s"><b></b>Roll-up &amp; kakémonos</li>
+    <li class="a" style="animation-name:slideL;--d:11.5s"><b></b>Panneaux publicitaires</li>
+    <li class="a" style="animation-name:slideL;--d:11.75s"><b></b>Stickers, vitrophanie &amp; véhicules</li>
+  </ul>
+
+  <!-- panneau publicitaire imprimé "en direct" -->
+  <div class="leg a" style="left:1060px;top:700px;height:330px;animation-name:fadeUp;--d:10.3s"></div>
+  <div class="leg a" style="left:1440px;top:700px;height:330px;animation-name:fadeUp;--d:10.3s"></div>
+  <div class="board a" style="left:880px;top:200px;width:760px;height:520px;animation-name:fadeUp;--d:10.3s">
+    <div class="ad a" style="background:#f4f4f4;animation-name:printDown;--d:10.9s;--t:1.8s;animation-timing-function:linear">
+      <div class="abs" style="inset:0;background:linear-gradient(135deg,#e30613 0,#a1000b 100%)"></div>
+      <div class="abs" style="right:-120px;top:-120px;width:460px;height:460px;border-radius:50%;background:rgba(255,255,255,.12)"></div>
+      <div class="abs" style="left:-80px;bottom:-160px;width:380px;height:380px;border-radius:50%;background:rgba(0,0,0,.18)"></div>
+      <div class="abs bebas" style="left:50px;top:50px;color:#fff;font-size:72px;letter-spacing:.04em">Grande promo</div>
+      <div class="abs bebas" style="left:46px;top:120px;color:#fff;font-size:260px">-30%</div>
+      <div class="abs" style="left:54px;top:400px;color:#fff;font-weight:700;font-size:26px;letter-spacing:.2em">SUR TOUTES VOS BÂCHES</div>
+      <div class="abs" style="right:40px;bottom:36px;width:190px;height:130px;background:#fff;border-radius:12px;padding:10px">
+        <img src="assets/logo-crop.png" style="width:100%;height:100%;object-fit:contain" alt="">
+      </div>
+    </div>
+    <div class="h a" style="animation-name:head;--d:10.9s;--t:1.8s;animation-timing-function:linear"></div>
+  </div>
+
+  <!-- roll-up -->
+  <div class="abs a" style="left:1600px;top:330px;width:240px;height:640px;transform-origin:bottom;animation-name:unroll;--d:12.4s;--t:1s">
+    <div class="abs" style="inset:0;background:#fff;box-shadow:0 30px 60px rgba(0,0,0,.6)">
+      <div class="abs" style="left:0;right:0;top:0;height:300px;background:#111"></div>
+      <div class="abs" style="left:20px;right:20px;top:40px;height:140px;background:#fff;border-radius:10px;padding:8px">
+        <img src="assets/logo-crop.png" style="width:100%;height:100%;object-fit:contain" alt=""></div>
+      <div class="abs bebas" style="left:20px;top:200px;color:#fff;font-size:54px">Impression</div>
+      <div class="abs bebas red" style="left:20px;top:330px;font-size:96px">Grand<br>format</div>
+      <div class="abs" style="left:20px;right:20px;bottom:30px;height:12px;background:var(--red)"></div>
+    </div>
+  </div>
+  <div class="abs a" style="left:1580px;top:965px;width:280px;height:26px;background:linear-gradient(#bbb,#666);border-radius:6px;animation-name:fadeIn;--d:12.3s;--t:.3s"></div>
+  <div class="cmyk abs a" style="left:1020px;top:96px;animation-name:fadeIn;--d:10.6s">
+    <i style="background:#00aeef"></i><i style="background:#ec008c"></i><i style="background:#fff200"></i><i style="background:#fff"></i>
+  </div>
+</section>
+
+<!-- ================= SCÈNE 4 — Petit format (16.5s → 23s) ================= -->
+<section class="scene" id="s4" style="--start:16.5s;--len:6.5s">
+  <div class="blk abs a" style="animation-name:slideR;--d:16.5s;--t:.6s"></div>
+
+  <!-- flyer A5 -->
+  <div class="flyer a" style="left:150px;top:150px;width:360px;height:500px;--r:-8deg;--fx:-200px;animation-name:drop;--d:17.1s;--t:.9s">
+    <div class="abs" style="inset:0;background:linear-gradient(170deg,#111 0,#111 55%,#e30613 55%)"></div>
+    <div class="abs bebas" style="left:28px;top:34px;color:#fff;font-size:80px">Grand<br>événement</div>
+    <div class="abs" style="left:30px;top:220px;color:#bbb;font-weight:600;font-size:20px;letter-spacing:.2em">SAMEDI · 20H</div>
+    <div class="abs bebas" style="left:28px;bottom:30px;color:#fff;font-size:70px">Entrée libre</div>
+  </div>
+  <!-- dépliant -->
+  <div class="flyer a" style="left:470px;top:110px;width:420px;height:300px;--r:6deg;--fx:200px;animation-name:drop;--d:17.35s;--t:.9s;display:flex">
+    <div style="flex:1;background:#fff;border-right:2px dashed #ddd;padding:24px">
+      <div style="width:60px;height:8px;background:#e30613;margin-bottom:16px"></div>
+      <div style="height:10px;background:#ddd;margin:10px 0;width:90%"></div><div style="height:10px;background:#ddd;margin:10px 0"></div>
+      <div style="height:10px;background:#ddd;margin:10px 0;width:70%"></div><div style="height:90px;background:#eee;margin-top:22px"></div></div>
+    <div style="flex:1;background:#fff;border-right:2px dashed #ddd;padding:24px">
+      <div style="height:120px;background:linear-gradient(135deg,#e30613,#7a0009)"></div>
+      <div style="height:10px;background:#ddd;margin:14px 0"></div><div style="height:10px;background:#ddd;width:60%"></div></div>
+    <div style="flex:1;background:#111;display:grid;place-items:center"><div class="bebas" style="color:#fff;font-size:44px;text-align:center">Brochure<br><span class="red">2025</span></div></div>
+  </div>
+  <!-- cartes de visite en éventail -->
+  <div class="card a" style="left:230px;top:600px;background:#111;--x:-90px;--y:20px;--r:-14deg;animation-name:fan;--d:18.1s;--t:.8s">
+    <div class="abs bebas red" style="left:30px;top:30px;font-size:120px">AD</div>
+    <div class="abs" style="left:30px;bottom:30px;color:#fff;font-weight:700;font-size:20px;letter-spacing:.2em">ARTCHILLE DESIGN PUB</div>
+  </div>
+  <div class="card a" style="left:230px;top:600px;background:#fff;--x:150px;--y:-10px;--r:9deg;animation-name:fan;--d:18.1s;--t:.8s">
+    <div class="abs" style="left:0;top:0;bottom:0;width:22px;background:var(--red)"></div>
+    <div class="abs" style="left:50px;top:40px;font-weight:800;font-size:34px;color:#111">Votre Nom</div>
+    <div class="abs" style="left:50px;top:86px;font-weight:600;font-size:20px;color:#888;letter-spacing:.15em">DIRECTEUR</div>
+    <div class="abs" style="left:50px;bottom:40px;width:240px;height:8px;background:#ddd"></div>
+    <div class="abs" style="left:50px;bottom:60px;width:180px;height:8px;background:#ddd"></div>
+  </div>
+  <div class="card a" style="left:230px;top:600px;background:#fff;animation-name:fadeUp;--d:17.8s;--t:.6s">
+    <img src="assets/logo-crop.png" class="abs" style="left:40px;top:30px;width:360px;height:200px;object-fit:contain" alt="">
+  </div>
+  <!-- étiquette ronde -->
+  <div class="abs a" style="left:700px;top:520px;width:200px;height:200px;animation-name:pop;--d:18.7s;--t:.6s">
+    <div style="width:100%;height:100%;border-radius:50%;background:var(--red);display:grid;place-items:center;box-shadow:0 20px 40px rgba(0,0,0,.3);animation:spin 12s linear infinite">
+      <div class="bebas" style="color:#fff;font-size:54px;text-align:center;line-height:.9">Sticker<br><span style="font-size:34px">100% perso</span></div>
+    </div>
+  </div>
+
+  <div class="abs" style="left:1180px;top:110px;color:#fff">
+    <div class="label a" style="animation-name:slideR;--d:16.9s">02 — Nos services</div>
+    <div class="bebas" style="font-size:250px;margin-top:20px">
+      <span class="mask"><span class="a" style="animation-name:rise;--d:17.05s">Petit</span></span>
+      <span class="mask"><span class="a red" style="animation-name:rise;--d:17.2s">format</span></span>
+    </div>
+  </div>
+  <ul class="list abs" style="left:1190px;top:620px;color:#fff">
+    <li class="a" style="animation-name:slideR;--d:18.2s"><b></b>Cartes de visite</li>
+    <li class="a" style="animation-name:slideR;--d:18.45s"><b></b>Flyers &amp; affiches</li>
+    <li class="a" style="animation-name:slideR;--d:18.7s"><b></b>Dépliants &amp; brochures</li>
+    <li class="a" style="animation-name:slideR;--d:18.95s"><b></b>Étiquettes &amp; autocollants</li>
+    <li class="a" style="animation-name:slideR;--d:19.2s"><b></b>Invitations &amp; calendriers</li>
+  </ul>
+</section>
+
+<!-- ================= SCÈNE 5 — Nos qualités (23s → 28.5s) ================= -->
+<section class="scene" id="s5" style="--start:23s;--len:5.5s">
+  <div class="abs" style="left:0;right:0;top:110px;text-align:center;color:#fff">
+    <div class="label red a" style="animation-name:fadeUp;--d:23.3s">03 — Nos qualités</div>
+    <div class="bebas" style="font-size:150px;margin-top:18px">
+      <span class="mask"><span class="a" style="animation-name:rise;--d:23.45s">Pourquoi nous choisir ?</span></span>
+    </div>
+  </div>
+  <div class="q a" style="left:105px;animation-name:fadeUp;--d:24.0s">
+    <div class="ic"><span class="bebas" style="font-size:86px;color:#fff">HD</span></div>
+    <h3>Qualité<br>haute définition</h3><p>Des impressions nettes et précises, sur tous supports.</p>
+    <div class="shine a" style="animation-name:shine;--d:25.6s;--t:1.2s"></div>
+  </div>
+  <div class="q a" style="left:540px;animation-name:fadeUp;--d:24.2s">
+    <div class="ic"><svg width="100" height="90" viewBox="0 0 100 90" style="mix-blend-mode:normal">
+      <circle cx="35" cy="32" r="26" fill="#00aeef" opacity=".9"/><circle cx="65" cy="32" r="26" fill="#ec008c" opacity=".85"/>
+      <circle cx="50" cy="58" r="26" fill="#fff200" opacity=".8"/></svg></div>
+    <h3>Couleurs<br>éclatantes</h3><p>Des teintes fidèles à votre image de marque.</p>
+    <div class="shine a" style="animation-name:shine;--d:25.8s;--t:1.2s"></div>
+  </div>
+  <div class="q a" style="left:975px;animation-name:fadeUp;--d:24.4s">
+    <div class="ic"><svg width="84" height="84" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+    <h3>Rapidité<br>&amp; délais tenus</h3><p>Vos commandes livrées dans les délais convenus.</p>
+    <div class="shine a" style="animation-name:shine;--d:26.0s;--t:1.2s"></div>
+  </div>
+  <div class="q a" style="left:1410px;animation-name:fadeUp;--d:24.6s">
+    <div class="ic"><svg width="84" height="84" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><circle cx="7" cy="7" r="1.5" fill="#fff"/></svg></div>
+    <h3>Prix<br>compétitifs</h3><p>Le meilleur rapport qualité-prix pour votre budget.</p>
+    <div class="shine a" style="animation-name:shine;--d:26.2s;--t:1.2s"></div>
+  </div>
+  <div class="abs a" style="left:0;bottom:0;height:12px;width:1920px;background:linear-gradient(90deg,#00aeef 0 25%,#ec008c 25% 50%,#fff200 50% 75%,#e30613 75%);transform-origin:left;animation-name:growX;--d:24.8s;--t:1.5s"></div>
+</section>
+
+<!-- ================= SCÈNE 6 — Outro (28.5s → 34s) ================= -->
+<section class="scene" id="s6" style="--start:28.5s;--len:5.6s">
+  <div class="paper"></div>
+  <div class="abs a" style="left:460px;top:80px;width:1000px;animation-name:blurIn;--d:28.8s;--t:1.2s">
+    <img src="assets/logo-crop.png" style="width:100%;display:block" alt="Artchille Design Pub">
+  </div>
+  <div class="dot a" style="left:300px;top:300px;width:40px;height:40px;animation-name:pop;--d:29.4s;--t:.5s"></div>
+  <div class="dot a" style="left:1580px;top:620px;width:30px;height:30px;animation-name:pop;--d:29.5s;--t:.5s"></div>
+  <div class="dot a" style="left:1640px;top:560px;width:16px;height:16px;animation-name:pop;--d:29.55s;--t:.5s"></div>
+  <div class="abs" style="left:0;right:0;top:790px;text-align:center;font-weight:800;font-size:40px;color:#111">
+    <span class="mask"><span class="a" style="animation-name:rise;--d:29.7s">Votre partenaire impression, du petit au grand format</span></span>
+  </div>
+  <!-- ✏️ Remplacez le numéro ci-dessous par le vôtre -->
+  <div class="contact abs a" style="animation-name:pop;--d:30.3s;--t:.7s">
+    <div class="ph"><svg width="40" height="40" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></div>
+    <span>Appel / WhatsApp : <span class="red">00 00 00 00 00</span></span>
+  </div>
+</section>
+
+<!-- transitions -->
+<div class="wipe r on" style="--d:5.05s"></div><div class="wipe k on" style="--d:5.15s"></div>
+<div class="wipe r on" style="--d:9.05s"></div><div class="wipe k on" style="--d:9.15s"></div>
+<div class="wipe k on" style="--d:16.05s"></div><div class="wipe r on" style="--d:16.15s"></div>
+<div class="wipe r on" style="--d:22.55s"></div><div class="wipe k on" style="--d:22.65s"></div>
+<div class="wipe k on" style="--d:28.05s"></div><div class="wipe r on" style="--d:28.15s"></div>
+</div>
+
+<script>
+// Durée totale de l'animation (en secondes)
+const TOTAL = 34;
+const stage = document.getElementById('stage');
+const render = new URLSearchParams(location.search).has('render');
+if (render) document.body.classList.add('render');
+
+function fit(){ stage.style.setProperty('--s', Math.min(innerWidth/1920, innerHeight/1080)); }
+addEventListener('resize', fit); fit();
+
+// Positionne toutes les animations CSS à l'instant t (secondes)
+function seek(t){
+  for (const a of document.getAnimations()){ a.pause(); a.currentTime = t*1000; }
+}
+window.seek = seek;
+window.TOTAL = TOTAL;
+
+if (!render){
+  document.fonts.ready.then(()=>{
+    const t0 = performance.now();
+    (function loop(now){ seek(((now - t0)/1000) % TOTAL); requestAnimationFrame(loop); })(t0);
+  });
+}
+</script>
+</body>
+</html>
