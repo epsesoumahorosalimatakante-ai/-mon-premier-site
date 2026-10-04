@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mes tâches</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>Mes tâches</h1>
+      <p class="compteur" id="compteur">Aucune tâche</p>
+    </header>
+
+    <form id="formulaire" class="ajout">
+      <input id="saisie" type="text" placeholder="Que dois-tu faire ?" autocomplete="off" maxlength="200" required>
+      <button type="submit">Ajouter</button>
+    </form>
+
+    <nav class="filtres" aria-label="Filtrer les tâches">
+      <button type="button" data-filtre="toutes" class="actif">Toutes</button>
+      <button type="button" data-filtre="actives">À faire</button>
+      <button type="button" data-filtre="terminees">Terminées</button>
+    </nav>
+
+    <ul id="liste" class="liste"></ul>
+
+    <p id="vide" class="vide">Rien à afficher pour l'instant ✨</p>
+
+    <footer>
+      <button type="button" id="effacer" class="lien">Effacer les tâches terminées</button>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
