@@ -1,0 +1,72 @@
+SOUMAHORO TRANSPORT – VOIX OFF ELEVENLABS
+Vidéo de présentation de l'entreprise (65 secondes)
+==================================================
+
+
+ÉTAPE 1 – CRÉER LA VOIX
+ElevenLabs > Voices > Voice Design (Créer une voix)
+Copier UNE des descriptions ci-dessous (en anglais, la voix parlera français).
+--------------------------------------------------
+
+OPTION 1 (RECOMMANDÉE) – Voix masculine chaleureuse et rassurante :
+
+A warm, confident adult African man in his late 30s, speaking French with a light, natural West African (Ivorian) accent. Deep, smooth and reassuring voice, like a trusted corporate narrator for a transport company. Clear articulation, friendly smile in the voice, calm but energetic pacing, professional advertising tone. Studio-quality recording, no background noise.
+
+
+OPTION 2 – Voix féminine dynamique et professionnelle :
+
+A bright, elegant adult African woman in her early 30s, speaking French with a soft, natural Ivorian accent. Warm, clear and confident voice with a welcoming smile, professional and modern, like a premium brand presenter. Medium pace, crisp articulation, upbeat but trustworthy advertising tone. Studio-quality recording, no background noise.
+
+
+OPTION 3 – Voix institutionnelle posée :
+
+A mature, authoritative African man in his 40s, speaking French with a subtle West African accent. Rich, deep and steady voice, calm and reassuring, conveying safety, reliability and professionalism. Slow-to-medium pace, very clear diction, corporate documentary narration style. Studio-quality recording, no background noise.
+
+
+TEXTE D'APERÇU (à coller dans Voice Design pour tester la voix) :
+
+Soumahoro Transport, une autre dimension du transport terrestre. Transport de voyageurs, service courrier et livraison : nous mettons notre savoir-faire au service de votre sécurité, de votre confort et de votre sérénité. Voyagez avec sérénité, nous sommes là pour vous !
+
+Ensuite :
+1. Cliquer sur « Generate ».
+2. Choisir parmi les 3 propositions la voix qui prononce le mieux « Soumahoro ».
+3. Cliquer sur « Save voice » et la nommer « Voix ST ».
+
+
+ÉTAPE 2 – GÉNÉRER LA VOIX OFF
+ElevenLabs > Text to Speech > choisir « Voix ST »
+--------------------------------------------------
+
+RÉGLAGES :
+- Modèle : Eleven Multilingual v2
+- Stability : 45 %
+- Similarity : 75 %
+- Style : 25 %
+- Speed : 1.0 (durée visée : 55 à 60 secondes)
+
+SCRIPT À COPIER-COLLER :
+
+Soumahoro Transport. Transport, courrier, livraison. <break time="1.0s" />
+Une autre dimension du transport terrestre. <break time="1.5s" />
+Soumahoro Transport est une entreprise spécialisée dans le transport de voyageurs, le service courrier et la livraison, avec une priorité : votre sécurité, votre confort et la rapidité. <break time="0.8s" />
+Nos services. <break time="2.0s" />
+Le transport de voyageurs : des véhicules modernes, des chauffeurs professionnels et des horaires respectés. <break time="0.8s" />
+Le service courrier : vos documents et colis expédiés avec soin, dans les délais et en toute confidentialité. <break time="0.8s" />
+La livraison : une prise en charge professionnelle, jusqu'à bon port. <break time="1.0s" />
+Nous relions la sous-région : Abidjan–Conakry et Abidjan–Liberia. <break time="2.0s" />
+Nos objectifs : un transport sûr et confortable, des liaisons internationales renforcées et des services toujours meilleurs. <break time="0.8s" />
+Le marché du transport en Afrique de l'Ouest est essentiel, et il grandit. <break time="1.0s" />
+Et nous avançons avec notre temps : réservations digitales et paiements simplifiés. <break time="1.0s" />
+Voyagez avec sérénité, nous sommes là pour vous ! <break time="1.0s" />
+Contactez-nous sur WhatsApp, Facebook ou Instagram : Soumahoro Transport.
+
+
+ASTUCES DE PRONONCIATION :
+- Si « Soumahoro » est mal prononcé, écrire : « Sou-ma-horo »
+- Si « Liberia » sonne anglais, écrire : « Libéria »
+- Avec le modèle Eleven v3, retirer les balises <break .../> (elles ne sont pas prises en charge) et garder les points de suspension pour les pauses.
+
+
+ÉTAPE 3 – ENVOYER LE FICHIER AUDIO
+--------------------------------------------------
+Envoyer le fichier MP3 généré : il sera synchronisé scène par scène avec la vidéo de présentation et mixé avec la musique.
