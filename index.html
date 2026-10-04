@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZK Stream — Kiffe sans limite</title>
+  <meta name="description" content="ZK Stream : profite de ta musique et de tes films préférés en illimité, à partir de 5.000F par mois.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,800;1,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="nav">
+    <a href="#" class="logo">ZK<span>Stream</span></a>
+    <nav>
+      <a href="#musique">Musique</a>
+      <a href="#films">Films &amp; séries</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#contact" class="btn btn-small">Commander</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <h1><span class="tilt">Kiffe</span><br>sans limite</h1>
+        <p>Ta musique partout, tes films et séries préférés en illimité.<br>Un seul contact, des abonnements à petit prix.</p>
+        <div class="hero-actions">
+          <a href="#tarifs" class="btn">Voir les offres</a>
+          <a href="#contact" class="btn btn-ghost">Nous contacter</a>
+        </div>
+      </div>
+      <div class="hero-badge" aria-hidden="true">
+        <span class="badge-price">5.000F</span>
+        <span class="badge-sub">par mois</span>
+      </div>
+    </section>
+
+    <section id="musique" class="offer offer-green">
+      <div class="offer-text">
+        <p class="kicker">Spotify Premium</p>
+        <h2>Ta musique<br>partout</h2>
+        <p>Écoute tes titres sans pub, télécharge tes playlists et profite-en même hors connexion. Tous tes sons, où que tu sois.</p>
+        <ul class="perks">
+          <li>Zéro publicité</li>
+          <li>Écoute hors ligne</li>
+          <li>Titres à volonté</li>
+        </ul>
+      </div>
+      <div class="offer-visual" aria-hidden="true">
+        <div class="phone">
+          <div class="phone-screen green-screen">
+            <p class="screen-title">Happy Hits!</p>
+            <div class="track"></div><div class="track"></div><div class="track"></div><div class="track"></div><div class="track"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="films" class="offer offer-red">
+      <div class="offer-visual" aria-hidden="true">
+        <div class="screen-wide">
+          <div class="stripes"></div>
+        </div>
+      </div>
+      <div class="offer-text">
+        <p class="kicker">Netflix</p>
+        <h2>L'adrénaline<br>et le suspense</h2>
+        <p>Avec tes meilleurs films et séries sur ton téléphone, ta tablette ou ta télé. Des heures de divertissement, quand tu veux.</p>
+        <ul class="perks">
+          <li>Films et séries en illimité</li>
+          <li>Sur tous tes écrans</li>
+          <li>Nouveautés chaque semaine</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="tarifs" class="pricing">
+      <h2>Nos offres</h2>
+      <p class="pricing-sub">Simple, rapide et sans engagement.</p>
+      <div class="cards">
+        <article class="card card-green">
+          <h3>Spotify Premium</h3>
+          <p class="price">5.000F <small>/ mois</small></p>
+          <ul>
+            <li>Musique sans pub</li>
+            <li>Téléchargements hors ligne</li>
+            <li>Activation rapide</li>
+          </ul>
+          <a href="#contact" class="btn">Je commande</a>
+        </article>
+        <article class="card card-red">
+          <h3>Netflix</h3>
+          <p class="price">5.000F <small>/ mois</small></p>
+          <ul>
+            <li>Films et séries en illimité</li>
+            <li>Qualité HD</li>
+            <li>Activation rapide</li>
+          </ul>
+          <a href="#contact" class="btn">Je commande</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <h2>Prêt à kiffer ?</h2>
+      <p>Écris-nous pour activer ton abonnement.</p>
+      <!-- Remplace 22500000000 par ton numéro WhatsApp (indicatif + numéro, sans espaces ni +) -->
+      <a class="btn btn-big" href="https://wa.me/22500000000?text=Bonjour%20ZK%20Stream%2C%20je%20veux%20m%27abonner" target="_blank" rel="noopener">Commander sur WhatsApp</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year">2026</span> ZK Stream. Tous droits réservés.</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
