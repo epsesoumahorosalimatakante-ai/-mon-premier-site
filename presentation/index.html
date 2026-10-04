@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Théodore Carmel — Motion Design</title>
+<style>
+@font-face{font-family:P;src:url(fonts/poppins-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:P;src:url(fonts/poppins-500.woff2) format("woff2");font-weight:500}
+@font-face{font-family:P;src:url(fonts/poppins-700.woff2) format("woff2");font-weight:700}
+@font-face{font-family:P;src:url(fonts/poppins-800.woff2) format("woff2");font-weight:800}
+@font-face{font-family:P;src:url(fonts/poppins-900.woff2) format("woff2");font-weight:900}
+@font-face{font-family:M;src:url(fonts/jbmono-500.woff2) format("woff2");font-weight:500}
+@font-face{font-family:M;src:url(fonts/jbmono-700.woff2) format("woff2");font-weight:700}
+:root{--o:#ff7a1a;--o2:#ffb347;--r:#ff3d2e;--ink:#120806}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#0a0504;font-family:P,sans-serif;color:#fff;transform-origin:0 0;flex:none}
+body.player #stage{position:absolute;left:0;top:0}
+.L{position:absolute;inset:0}
+#cam{position:absolute;inset:0}
+#bgglow{background:radial-gradient(ellipse 55% 50% at 50% 40%,rgba(255,112,24,.55),rgba(150,42,10,.22) 45%,transparent 75%)}
+#floorwrap{perspective:700px;perspective-origin:50% 40%;-webkit-mask-image:linear-gradient(to bottom,transparent 46%,#000 70%);mask-image:linear-gradient(to bottom,transparent 46%,#000 70%)}
+#floor{position:absolute;left:-150%;width:400%;top:56%;height:260%;transform-origin:50% 0;transform:rotateX(76deg);
+ background-image:linear-gradient(rgba(255,128,48,.55) 2px,transparent 2px),linear-gradient(90deg,rgba(255,128,48,.55) 2px,transparent 2px);background-size:110px 110px}
+#ceilwrap{perspective:700px;perspective-origin:50% 60%;-webkit-mask-image:linear-gradient(to top,transparent 62%,rgba(0,0,0,.5) 92%);mask-image:linear-gradient(to top,transparent 62%,rgba(0,0,0,.5) 92%)}
+#ceil{position:absolute;left:-150%;width:400%;bottom:70%;height:260%;transform-origin:50% 100%;transform:rotateX(-76deg);
+ background-image:linear-gradient(rgba(255,128,48,.35) 2px,transparent 2px),linear-gradient(90deg,rgba(255,128,48,.35) 2px,transparent 2px);background-size:110px 110px}
+#vig{background:radial-gradient(ellipse 75% 70% at 50% 50%,transparent 55%,rgba(0,0,0,.8));pointer-events:none}
+#flash{background:radial-gradient(circle at 50% 50%,#fff3e0,#ff9a3c 40%,rgba(255,80,20,0) 80%);opacity:0;mix-blend-mode:screen}
+#bars div{position:absolute;left:0;right:0;height:10px;opacity:0}
+.scene{position:absolute;inset:0;display:none;will-change:transform,opacity,filter}
+
+/* brand watermark */
+#brand{position:absolute;right:56px;bottom:44px;display:flex;align-items:center;gap:16px;opacity:0}
+#brand .mono{width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,var(--r),var(--o) 55%,var(--o2));display:grid;place-items:center;font-weight:900;font-size:26px;letter-spacing:-1px;box-shadow:0 0 30px rgba(255,110,30,.6)}
+#brand b{display:block;font-size:22px;font-weight:700;line-height:1.1}
+#brand span{font-size:16px;color:#ffb98a;font-weight:500}
+
+/* rings */
+.ring{border-radius:50%;padding:10px;background:conic-gradient(from 0deg,#ff3d2e,#ffb347,#ff7a1a,#ff3d2e);box-shadow:0 0 90px rgba(255,110,30,.75),0 0 30px rgba(255,170,80,.6)}
+.ring img{display:block;width:100%;height:100%;border-radius:50%;border:7px solid var(--ink);box-sizing:border-box;object-fit:cover}
+
+/* S1 */
+#rays{position:absolute;left:50%;top:40%;width:2400px;height:2400px;margin:-1200px 0 0 -1200px;border-radius:50%;
+ background:repeating-conic-gradient(from 0deg,rgba(255,150,60,.14) 0deg 4deg,transparent 4deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 8%,transparent 55%);mask-image:radial-gradient(circle,#000 8%,transparent 55%)}
+#s1ring{position:absolute;left:50%;top:400px;width:330px;height:330px;margin:-165px 0 0 -165px}
+#s1name{position:absolute;left:0;right:0;top:600px;text-align:center;font-size:128px;font-weight:800;margin:0;letter-spacing:-2px;text-shadow:0 0 40px rgba(255,120,40,.6)}
+#s1name span{display:inline-block;white-space:pre}
+#s1name .hl{background:linear-gradient(180deg,#fff 10%,#ffc38a 55%,#ff7a1a);-webkit-background-clip:text;background-clip:text;color:transparent}
+#s1sub{position:absolute;left:0;right:0;top:790px;text-align:center;font-size:30px;font-weight:600;letter-spacing:10px;color:#ffc79c}
+#s1line{position:absolute;left:50%;top:770px;height:3px;width:900px;margin-left:-450px;background:linear-gradient(90deg,transparent,var(--o),transparent)}
+
+/* S2 chat */
+#chat{position:absolute;left:440px;top:170px;width:1040px;height:700px;border-radius:30px;background:rgba(32,18,13,.88);border:1.5px solid rgba(255,140,60,.28);box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 80px rgba(255,100,30,.18);overflow:hidden}
+#chat .hd{display:flex;align-items:center;gap:18px;padding:24px 34px;border-bottom:1px solid rgba(255,255,255,.08)}
+.dots3 i{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:8px}
+.av2{display:flex}.av2 b{width:48px;height:48px;border-radius:50%;border:3px solid #20120d}
+.av2 b+b{margin-left:-16px}
+#chat .hd .t b{display:block;font-size:24px}#chat .hd .t span{font-size:17px;color:#bfa597}
+#msgs{display:flex;flex-direction:column;gap:24px;padding:36px 40px}
+.bub{max-width:700px;padding:22px 30px;border-radius:26px;font-size:32px;font-weight:500;line-height:1.35;opacity:0;transform-origin:left bottom}
+.bub.l{align-self:flex-start;background:#3a2c26;border-bottom-left-radius:8px}
+.bub.r{align-self:flex-end;background:linear-gradient(135deg,#ff8a2a,#ff5a1f);border-bottom-right-radius:8px;transform-origin:right bottom;box-shadow:0 10px 40px rgba(255,90,30,.35)}
+.bub .k{color:#ffae5e;font-weight:700}.bub.r .k{color:#fff3c4;font-weight:800}
+.typing i{display:inline-block;width:14px;height:14px;margin:0 5px;border-radius:50%;background:#fff}
+
+/* S3 search */
+#sbar{position:absolute;left:390px;top:330px;width:1140px;height:130px;border-radius:30px;background:rgba(30,18,14,.92);border:2px solid rgba(255,140,60,.45);box-shadow:0 0 70px rgba(255,110,30,.3);display:flex;align-items:center;padding:0 44px;box-sizing:border-box;gap:26px}
+#sq{font-size:60px;font-weight:700;letter-spacing:-.5px;white-space:pre}
+#sq .a{color:#fff}#sq .b{color:var(--o)}
+#caret{width:4px;height:64px;background:var(--o)}
+#chips{position:absolute;left:470px;top:476px;display:flex;gap:14px}
+.chip{padding:8px 20px;border-radius:30px;background:rgba(255,255,255,.08);font-size:20px;font-weight:500;color:#ffd3b0;border:1px solid rgba(255,140,60,.25)}
+.chip.on{background:rgba(255,122,26,.2);color:#fff}
+#res{position:absolute;left:390px;top:540px;width:1140px;border-radius:26px;background:rgba(30,18,14,.95);border:1.5px solid rgba(255,140,60,.3);overflow:hidden}
+.rrow{display:flex;align-items:center;gap:26px;padding:24px 34px}
+.rrow img{width:96px;height:96px;border-radius:50%;border:4px solid var(--o)}
+.rrow b{font-size:36px;display:block}.rrow span{font-size:22px;color:#d9b9a5}
+.rrow .go{margin-left:auto;padding:14px 30px;border-radius:16px;background:var(--o);font-weight:700;font-size:22px}
+.rrow.dim{opacity:.35;border-top:1px solid rgba(255,255,255,.06)}
+.rrow.dim i{width:96px;height:96px;border-radius:50%;background:#3a2c26;display:block}
+#cursor{position:absolute;width:44px;height:44px}
+
+/* S4 terminal */
+#rain{position:absolute;inset:0}
+#term{position:absolute;left:290px;top:150px;width:1340px;height:760px;border-radius:24px;background:rgba(14,9,8,.94);border:1.5px solid rgba(255,140,60,.35);box-shadow:0 0 90px rgba(255,100,30,.25);overflow:hidden}
+#term .hd{padding:18px 26px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:20px;font-family:M;font-size:19px;color:#b88f78}
+#tl{padding:34px 44px;font-family:M;font-size:31px;line-height:1.75;white-space:pre;color:#ffd9bf}
+#tl .g{color:#52e08a}#tl .o{color:#ff8c3a}#tl .d{color:#7b5d50}#tl .w{color:#fff;font-weight:700}#tl .c{color:#5fd1ff}
+#tcur{display:inline-block;width:18px;height:34px;background:var(--o);vertical-align:-6px}
+#tprog{position:absolute;left:44px;right:44px;bottom:40px;height:14px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden}
+#tprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--r),var(--o),var(--o2));box-shadow:0 0 20px var(--o)}
+#tbars div{position:absolute;left:0;right:0;opacity:0}
+
+/* S5 globe */
+#gcv{position:absolute;inset:0}
+#hud{position:absolute;left:90px;top:110px;font-family:M;font-size:24px;line-height:1.8;color:#ffcfae}
+#hud .t{color:var(--o);font-weight:700;letter-spacing:3px}
+#gcard{position:absolute;left:1290px;top:330px;padding:26px 34px;border-radius:24px;background:rgba(30,18,14,.88);border:1.5px solid rgba(255,140,60,.35);box-shadow:0 0 60px rgba(255,110,30,.25);min-width:340px}
+#gcard b{font-size:44px;display:flex;align-items:center;gap:18px}
+#gcard .sub{font-size:22px;color:#61e294;display:flex;align-items:center;gap:10px;margin-top:6px}
+#gcard .sub i{width:12px;height:12px;border-radius:50%;background:#61e294;box-shadow:0 0 12px #61e294}
+.flag{display:inline-flex;width:66px;height:44px;border-radius:6px;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.2)}
+.flag i{flex:1}.flag i:nth-child(1){background:#ce1126}.flag i:nth-child(2){background:#fcd116}.flag i:nth-child(3){background:#009460}
+#crumb{position:absolute;left:0;right:0;bottom:120px;text-align:center;font-size:26px;font-weight:700;letter-spacing:4px;color:#d9c0b0}
+#crumb span{opacity:.3}#crumb .on{color:var(--o)}
+
+/* S6 Adobe */
+#s6t{position:absolute;left:0;right:0;top:120px;text-align:center}
+#s6t small{display:block;font-size:24px;letter-spacing:12px;color:#ffb98a;font-weight:600}
+#s6t h2{margin:10px 0 0;font-size:84px;font-weight:800;letter-spacing:-1px}
+#tiles{position:absolute;left:0;right:0;top:390px;display:flex;justify-content:center;gap:56px;perspective:1400px}
+.tile{width:250px;text-align:center}
+.app{width:210px;height:205px;margin:0 auto;border-radius:44px;display:grid;place-items:center;font-size:104px;font-weight:700;letter-spacing:-3px;position:relative;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.55)}
+.app::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(var(--sh,-120%))}
+.app.pr{background:#00005b;color:#9999ff;box-shadow:0 0 60px rgba(153,153,255,.35),0 30px 60px rgba(0,0,0,.55)}
+.app.ae{background:#00005b;color:#d291ff;box-shadow:0 0 60px rgba(210,145,255,.35),0 30px 60px rgba(0,0,0,.55)}
+.app.ps{background:#001e36;color:#31a8ff;box-shadow:0 0 60px rgba(49,168,255,.35),0 30px 60px rgba(0,0,0,.55)}
+.app.ai{background:#330000;color:#ff9a00;box-shadow:0 0 60px rgba(255,154,0,.35),0 30px 60px rgba(0,0,0,.55)}
+.app.au{background:#00005b;color:#00e4bb;box-shadow:0 0 60px rgba(0,228,187,.35),0 30px 60px rgba(0,0,0,.55)}
+.tile b{display:block;margin-top:28px;font-size:30px}
+.tile span{display:block;font-size:21px;color:#ffc6a0;margin-top:4px}
+.tile .bar{height:8px;border-radius:6px;background:rgba(255,255,255,.08);margin:18px 20px 0;overflow:hidden}
+.tile .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--r),var(--o2))}
+#s6foot{position:absolute;left:0;right:0;top:870px;text-align:center;font-size:28px;font-weight:600;color:#ffdcc3}
+#s6foot b{color:var(--o)}
+
+/* S7 profile */
+#pf{position:absolute;left:150px;top:200px;width:900px}
+#pfring{width:250px;height:250px;position:absolute;left:0;top:0}
+#pfname{position:absolute;left:300px;top:28px;font-size:66px;font-weight:800;line-height:1;letter-spacing:-1.5px;white-space:nowrap}
+#pfrole{position:absolute;left:304px;top:116px;font-size:30px;color:#ffc9a3;font-weight:500}
+#pfchip{position:absolute;left:300px;top:180px;padding:10px 24px;border-radius:30px;background:rgba(255,122,26,.16);border:1.5px solid rgba(255,140,60,.5);font-size:22px;font-weight:600}
+#stats{position:absolute;left:0;top:330px;display:flex;gap:90px}
+#stats div b{display:block;font-size:84px;font-weight:800;line-height:1}
+#stats div span{font-size:24px;color:#d9b9a5}
+#bio{position:absolute;left:0;top:500px;font-size:29px;color:#f3dccd;width:860px;line-height:1.45}
+#cta7{position:absolute;left:0;top:620px;width:620px;height:84px;border-radius:22px;background:linear-gradient(90deg,#ff5a1f,#ff8a2a);display:grid;place-items:center;font-size:30px;font-weight:700;box-shadow:0 0 50px rgba(255,100,30,.5)}
+#grid7{position:absolute;left:1120px;top:170px;display:grid;grid-template-columns:repeat(3,200px);gap:22px;perspective:1600px}
+.th{height:330px;border-radius:18px;overflow:hidden;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.6);border:1.5px solid rgba(255,255,255,.1);backface-visibility:hidden}
+.th .lab{position:absolute;left:12px;bottom:10px;font-size:15px;font-weight:700;padding:4px 10px;border-radius:8px;background:rgba(0,0,0,.55)}
+
+/* S8 counter */
+#bcv{position:absolute;inset:0}
+#num{position:absolute;left:0;right:0;top:300px;text-align:center;font-size:300px;font-weight:900;line-height:1;letter-spacing:-6px;
+ background:linear-gradient(180deg,#fff 30%,#ffd2a8 70%,#ff9a4a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 40px rgba(255,120,40,.6))}
+#nlab{position:absolute;left:0;right:0;top:650px;text-align:center;font-size:52px;font-weight:700;letter-spacing:18px;color:#ffc79c}
+#nsub{position:absolute;left:0;right:0;top:760px;text-align:center;font-size:28px;font-weight:500;color:#e8cfc0;letter-spacing:3px}
+
+/* S9 outro */
+#oring{position:absolute;left:50%;top:150px;width:230px;height:230px;margin-left:-115px}
+#oname{position:absolute;left:0;right:0;top:420px;text-align:center;font-size:118px;font-weight:900;letter-spacing:14px;line-height:1;
+ background:linear-gradient(180deg,#fff 20%,#ffc08a 70%,#ff7a1a);-webkit-background-clip:text;background-clip:text;color:transparent}
+#orole{position:absolute;left:0;right:0;top:560px;text-align:center;font-size:32px;color:#ffd9bf;font-weight:500}
+#ophone{position:absolute;left:50%;top:650px;width:760px;margin-left:-380px;height:120px;border-radius:30px;background:linear-gradient(90deg,#ff4a1f,#ff8a2a 60%,#ffaf45);display:flex;align-items:center;justify-content:center;gap:28px;box-shadow:0 0 80px rgba(255,100,30,.55)}
+#ophone .ic{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center}
+#ophone b{font-size:62px;font-weight:800;letter-spacing:3px}
+#ocall{position:absolute;left:0;right:0;top:792px;text-align:center;font-size:24px;letter-spacing:8px;color:#ffc9a3;font-weight:600}
+#oapps{position:absolute;left:0;right:0;top:860px;display:flex;justify-content:center;gap:22px;align-items:center}
+#oapps .app{width:70px;height:68px;border-radius:15px;font-size:34px;letter-spacing:-1px;margin:0}
+#oloc{position:absolute;left:0;right:0;top:960px;text-align:center;font-size:22px;color:#c9ab99;display:flex;justify-content:center;align-items:center;gap:12px}
+#oloc .flag{width:36px;height:24px;border-radius:4px}
+#blackout{background:#000;opacity:0}
+</style>
+</head>
+<body>
+<div id="stage">
+ <div id="cam">
+  <div class="L" id="bgglow"></div>
+  <div class="L" id="ceilwrap"><div id="ceil"></div></div>
+  <div class="L" id="floorwrap"><div id="floor"></div></div>
+  <canvas class="L" id="pcv" width="1920" height="1080"></canvas>
+
+  <!-- S1 intro -->
+  <div class="scene" id="s1">
+   <div id="rays"></div>
+   <div class="ring" id="s1ring"><img src="assets/avatar.jpg" alt=""></div>
+   <h1 id="s1name"></h1>
+   <div id="s1line"></div>
+   <div id="s1sub">MONTEUR VIDÉO • MOTION DESIGNER • GRAPHISTE</div>
+  </div>
+
+  <!-- S2 chat -->
+  <div class="scene" id="s2">
+   <div id="chat">
+    <div class="hd">
+     <span class="dots3"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>
+     <span class="av2"><b style="background:#6b5a52"></b><b style="background:linear-gradient(135deg,#ff5a1f,#ffb347)"></b></span>
+     <span class="t"><b>Discussion</b><span>2 participants • en ligne</span></span>
+    </div>
+    <div id="msgs">
+     <div class="bub l" id="m1">Tu connais quelqu'un qui fait du <span class="k">montage vidéo</span> et des <span class="k">affiches</span> pro ?</div>
+     <div class="bub r" id="m2"><span class="typing"><i></i><i></i><i></i></span><span class="txt">Oui ! <span class="k">Théodore Carmel</span></span></div>
+     <div class="bub r" id="m3">3 ans d'expérience. Ses vidéos et ses affiches sont incroyables !</div>
+     <div class="bub l" id="m4">Envoie-moi son contact, vite !</div>
+    </div>
+   </div>
+  </div>
+
+  <!-- S3 search -->
+  <div class="scene" id="s3">
+   <div id="sbar">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ff7a1a" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+    <div id="sq"></div><div id="caret"></div>
+   </div>
+   <div id="chips"><span class="chip on">● Adobe Creative Cloud</span><span class="chip">Créatifs ▾</span><span class="chip">Guinée</span></div>
+   <div id="res">
+    <div class="rrow" id="r1"><img src="assets/avatar.jpg" alt=""><div><b>Théodore Carmel</b><span>Montage vidéo • Motion design • Affiches • Guinée</span></div><span class="go">Voir le profil</span></div>
+    <div class="rrow dim"><i></i><div><b style="background:#3a2c26;width:380px;height:30px;border-radius:8px"></b><span style="display:block;margin-top:12px;background:#3a2c26;width:520px;height:18px;border-radius:6px"></span></div></div>
+   </div>
+   <svg id="cursor" viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.5L9.5 21z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg>
+  </div>
+
+  <!-- S4 terminal -->
+  <div class="scene" id="s4">
+   <canvas id="rain" width="1920" height="1080"></canvas>
+   <div id="term">
+    <div class="hd"><span class="dots3"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>recherche — talents — système</div>
+    <div id="tl"></div>
+    <div id="tprog"><i></i></div>
+   </div>
+   <div id="tbars"></div>
+  </div>
+
+  <!-- S5 globe -->
+  <div class="scene" id="s5">
+   <canvas id="gcv" width="1920" height="1080"></canvas>
+   <div id="hud"></div>
+   <div id="gcard"><b><span class="flag"><i></i><i></i><i></i></span>Guinée</b><div class="sub"><i></i>Talent localisé</div></div>
+   <div id="crumb"><span id="c1">GUINÉE</span> <span id="c2">▸ AFRIQUE</span> <span id="c3">▸ LE MONDE</span></div>
+  </div>
+
+  <!-- S6 Adobe -->
+  <div class="scene" id="s6">
+   <div id="s6t"><small>MES OUTILS PROFESSIONNELS</small><h2>Adobe Creative Cloud</h2></div>
+   <div id="tiles">
+    <div class="tile"><div class="app pr">Pr</div><b>Premiere Pro</b><span>Montage vidéo</span><div class="bar"><i></i></div></div>
+    <div class="tile"><div class="app ae">Ae</div><b>After Effects</b><span>Motion design</span><div class="bar"><i></i></div></div>
+    <div class="tile"><div class="app ps">Ps</div><b>Photoshop</b><span>Affiches &amp; retouche</span><div class="bar"><i></i></div></div>
+    <div class="tile"><div class="app ai">Ai</div><b>Illustrator</b><span>Logos &amp; vecteurs</span><div class="bar"><i></i></div></div>
+    <div class="tile"><div class="app au">Au</div><b>Audition</b><span>Sound design</span><div class="bar"><i></i></div></div>
+   </div>
+   <div id="s6foot">Montage • Motion design • Conception d'affiches — <b>niveau expert</b></div>
+  </div>
+
+  <!-- S7 profile -->
+  <div class="scene" id="s7">
+   <div id="pf">
+    <div class="ring" id="pfring"><img src="assets/avatar.jpg" alt=""></div>
+    <div id="pfname">Théodore Carmel</div>
+    <div id="pfrole">Expert en montage vidéo &amp; affiches</div>
+    <div id="pfchip">Montage • Motion design • Affiches</div>
+    <div id="stats">
+     <div><b id="st1">0</b><span>Ans d'expérience</span></div>
+     <div><b id="st2">0</b><span>Logiciels Adobe</span></div>
+     <div><b id="st3">0%</b><span>Professionnel</span></div>
+    </div>
+    <div id="bio">Je donne vie à vos idées : vidéos dynamiques, motion design et affiches qui captent l'attention.</div>
+    <div id="cta7">Travaillons ensemble</div>
+   </div>
+   <div id="grid7">
+    <div class="th" style="background:radial-gradient(circle at 70% 30%,#ff9a3c,#b8320f 45%,#1a0805 80%)">
+     <div style="position:absolute;left:16px;top:20px;font-weight:900;font-size:44px;line-height:.95">GRAND<br>CONCERT</div>
+     <div style="position:absolute;left:16px;top:130px;font-size:15px;letter-spacing:3px;color:#ffe2c8">SAMEDI • 20H</div>
+     <div style="position:absolute;right:-30px;bottom:30px;width:150px;height:150px;border-radius:50%;border:10px solid #ffd27a;opacity:.8"></div>
+     <span class="lab">Affiche</span></div>
+    <div class="th" style="background:linear-gradient(180deg,#1b1f2a,#0b0d12)">
+     <div style="position:absolute;left:50%;top:110px;margin-left:-38px;width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.15);display:grid;place-items:center"><div style="width:0;height:0;border-left:26px solid #fff;border-top:16px solid transparent;border-bottom:16px solid transparent;margin-left:8px"></div></div>
+     <div style="position:absolute;left:14px;right:14px;bottom:56px;height:10px;border-radius:5px;background:linear-gradient(90deg,#9999ff 0 35%,#d291ff 35% 60%,#31a8ff 60% 80%,#00e4bb 80%)"></div>
+     <div style="position:absolute;left:14px;right:14px;bottom:76px;height:10px;border-radius:5px;background:linear-gradient(90deg,#ff7a1a 0 50%,transparent 50% 58%,#ff7a1a 58%)"></div>
+     <span class="lab">Montage</span></div>
+    <div class="th" style="background:linear-gradient(160deg,#1fa2ff,#12d8fa 40%,#0a3d62)">
+     <div style="position:absolute;left:14px;top:22px;font-weight:900;font-size:30px;line-height:1">PROMO</div>
+     <div style="position:absolute;left:10px;top:60px;font-weight:900;font-size:96px;line-height:1;letter-spacing:-4px">-50%</div>
+     <div style="position:absolute;left:14px;bottom:52px;padding:6px 14px;border-radius:20px;background:#fff;color:#0a3d62;font-weight:800;font-size:15px">COMMANDEZ</div>
+     <span class="lab">Flyer</span></div>
+    <div class="th" style="background:#120a1f">
+     <div style="position:absolute;left:50%;top:150px;width:220px;height:220px;margin:-110px 0 0 -110px;border-radius:50%;border:3px solid #d291ff;opacity:.5"></div>
+     <div style="position:absolute;left:50%;top:150px;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:30px;background:linear-gradient(135deg,#d291ff,#ff7a1a);transform:rotate(25deg)"></div>
+     <div style="position:absolute;left:0;right:0;top:250px;text-align:center;font-weight:800;font-size:24px;letter-spacing:6px">MOTION</div>
+     <span class="lab">Motion design</span></div>
+    <div class="th" style="background:linear-gradient(90deg,#5b6770 50%,#c7642a 50%)">
+     <div style="position:absolute;left:50%;top:0;bottom:0;width:3px;background:#fff"></div>
+     <div style="position:absolute;left:14px;top:16px;font-size:14px;font-weight:700">AVANT</div>
+     <div style="position:absolute;right:14px;top:16px;font-size:14px;font-weight:700">APRÈS</div>
+     <div style="position:absolute;left:30px;right:30px;top:120px;height:120px;border-radius:50% 50% 10px 10px;background:rgba(0,0,0,.35)"></div>
+     <span class="lab">Étalonnage</span></div>
+    <div class="th" style="background:linear-gradient(160deg,#3a1a0c,#160806);display:grid;place-items:center">
+     <div style="font-size:28px;font-weight:700;color:#ffb98a">Voir plus →</div></div>
+   </div>
+  </div>
+
+  <!-- S8 counter -->
+  <div class="scene" id="s8">
+   <canvas id="bcv" width="1920" height="1080"></canvas>
+   <div id="num">0</div>
+   <div id="nlab">JOURS DE CRÉATION</div>
+   <div id="nsub">Montage vidéo • Motion design • Conception d'affiches</div>
+  </div>
+
+  <!-- S9 outro -->
+  <div class="scene" id="s9">
+   <div class="ring" id="oring"><img src="assets/avatar.jpg" alt=""></div>
+   <div id="oname">THÉODORE CARMEL</div>
+   <div id="orole">Monteur vidéo &amp; concepteur d'affiches • 3 ans d'expérience</div>
+   <div id="ophone"><span class="ic"><svg width="40" height="40" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg></span><b>05 65 40 31 11</b></div>
+   <div id="ocall">APPELLE-MOI POUR TES PROJETS</div>
+   <div id="oapps"><div class="app pr">Pr</div><div class="app ae">Ae</div><div class="app ps">Ps</div><div class="app ai">Ai</div><div class="app au">Au</div></div>
+   <div id="oloc"><span class="flag"><i></i><i></i><i></i></span>Théodore Carmel — Guinéen • Disponible pour vos projets</div>
+  </div>
+
+  <div id="brand"><div class="mono">TC</div><div><b>Théodore Carmel</b><span>Motion Designer</span></div></div>
+ </div>
+ <div class="L" id="bars"></div>
+ <div class="L" id="flash"></div>
+ <div class="L" id="vig"></div>
+ <div class="L" id="blackout"></div>
+</div>
+
+<script>
+const DUR = 51;
+const $ = id => document.getElementById(id);
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => cl((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eo5 = x => 1 - Math.pow(1 - x, 5);
+const ei = x => x * x * x;
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const hash = n => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+
+/* scene windows [start, end] */
+const SC = { s1: [0, 6], s2: [6, 12.5], s3: [12.5, 16], s4: [16, 21], s5: [21, 26], s6: [26, 33], s7: [33, 40], s8: [40, 45.2], s9: [45.2, 51] };
+const CUTS = [6, 12.5, 16, 21, 26, 33, 40, 45.2];
+const SHAKES = [[1.25, 10], [6.05, 6], [12.55, 6], [16.05, 14], [21.05, 8], [26.9, 5], [33.05, 6], [42.6, 22], [45.3, 14]];
+
+/* --- build dynamic DOM --- */
+const NAME = "Théodore Carmel";
+$('s1name').innerHTML = [...NAME].map((c, i) => `<span class="${i >= 9 ? 'hl' : ''}">${c}</span>`).join('');
+const nameSpans = [...$('s1name').children];
+for (let i = 0; i < 6; i++) { const d = document.createElement('div'); $('bars').appendChild(d); }
+for (let i = 0; i < 7; i++) { const d = document.createElement('div'); $('tbars').appendChild(d); }
+
+/* particles */
+const pcv = $('pcv'), px = pcv.getContext('2d');
+const sprite = document.createElement('canvas'); sprite.width = sprite.height = 64;
+{ const g = sprite.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,220,170,1)'); gr.addColorStop(.25, 'rgba(255,150,60,.7)'); gr.addColorStop(1, 'rgba(255,90,20,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64); }
+const R0 = rng(7), PARTS = Array.from({ length: 95 }, () => ({ x: R0() * 1920, y: R0() * 1180, s: 10 + R0() * 34, v: 12 + R0() * 40, ph: R0() * 6.28, a: .2 + R0() * .55 }));
+function drawParticles(t, boost) {
+  px.clearRect(0, 0, 1920, 1080);
+  px.globalCompositeOperation = 'lighter';
+  for (const p of PARTS) {
+    const y = ((p.y - t * p.v) % 1180 + 1180) % 1180 - 50;
+    const x = p.x + Math.sin(t * .6 + p.ph) * 26;
+    const tw = .65 + .35 * Math.sin(t * 2.3 + p.ph * 3);
+    px.globalAlpha = p.a * tw * boost;
+    px.drawImage(sprite, x - p.s / 2, y - p.s / 2, p.s, p.s);
+  }
+  px.globalAlpha = 1; px.globalCompositeOperation = 'source-over';
+}
+
+/* generic scene envelope */
+function env(id, t, opt = {}) {
+  const [a, b] = SC[id], el = $(id);
+  const ti = opt.ti ?? .55, to = opt.to ?? .5;
+  if (t < a - .001 || t > b + .001) { el.style.display = 'none'; return null; }
+  el.style.display = 'block';
+  const ki = eo(P(t, a, a + ti)), ko = ei(P(t, b - to, b));
+  if (opt.manual) return { ki, ko, a, b };
+  const sc = lerp(opt.si ?? 1.18, 1, ki) * lerp(1, opt.so ?? .82, ko);
+  el.style.opacity = (a === 0 ? 1 : ki) * (1 - ko);
+  el.style.transform = `scale(${sc}) rotate(${(1 - ki) * (opt.ri ?? 0) + ko * (opt.ro ?? 0)}deg)`;
+  const bl = (1 - ki) * 22 + ko * 24;
+  el.style.filter = bl > .3 ? `blur(${bl}px)` : 'none';
+  return { ki, ko, a, b };
+}
+
+/* --- S4 terminal content --- */
+const TLINES = [
+  [16.25, [['$ ', 'o'], ['search --creatif ', ''], ['"théodore carmel"', 'w']]],
+  [16.95, [['[OK] ', 'g'], ['profil trouvé · 1 résultat · vérifié', '']]],
+  [17.45, [['› origine ', ''], ['.............. ', 'd'], ['GUINÉE (GN)', 'w']]],
+  [17.95, [['› spécialités ', ''], ['.......... ', 'd'], ['MONTAGE VIDÉO + AFFICHES', 'o']]],
+  [18.45, [['› expérience ', ''], ['........... ', 'd'], ['3 ANS', 'w']]],
+  [18.95, [['› outils ', ''], ['............... ', 'd'], ['Pr · Ae · Ps · Ai · Au', 'c']]],
+  [19.45, [['› statut ', ''], ['............... ', 'd'], ['DISPONIBLE', 'g']]],
+  [19.95, [['▸ CHARGEMENT DU PROFIL ', 'o']]],
+];
+function renderTerm(t) {
+  let html = '';
+  for (const [st, segs] of TLINES) {
+    if (t < st) break;
+    const total = segs.reduce((s, x) => s + x[0].length, 0);
+    let n = Math.floor(cl((t - st) / .38) * total);
+    for (const [txt, c] of segs) {
+      const part = txt.slice(0, Math.max(0, n)); n -= txt.length;
+      if (part) html += c ? `<span class="${c}">${part}</span>` : part;
+    }
+    html += '\n';
+  }
+  html = html.replace(/\n$/, '');
+  const blink = Math.floor(t * 3) % 2 === 0;
+  $('tl').innerHTML = html + `<span id="tcur" style="opacity:${blink ? 1 : 0}"></span>`;
+}
+
+/* --- S4 matrix rain --- */
+const rcv = $('rain'), rx = rcv.getContext('2d');
+const GLY = '01アイウエオカキクケコ<>/{}=+#$TCPRAEPSAI';
+function drawRain(t) {
+  rx.clearRect(0, 0, 1920, 1080);
+  rx.font = '500 22px M, monospace';
+  const cols = [];
+  for (let x = 20; x < 280; x += 30) cols.push(x);
+  for (let x = 1650; x < 1910; x += 30) cols.push(x);
+  cols.forEach((x, ci) => {
+    const sp = 6 + hash(ci) * 10, off = hash(ci + 50) * 40;
+    const head = (t * sp + off) % 46;
+    for (let r = 0; r < 40; r++) {
+      const d = head - r; if (d < 0 || d > 18) continue;
+      const ch = GLY[Math.floor(hash(ci * 97 + r * 13 + Math.floor(t * 10)) * GLY.length)];
+      rx.fillStyle = d < 1 ? 'rgba(255,240,220,.95)' : `rgba(255,${120 + d * 3},40,${.75 * (1 - d / 18)})`;
+      rx.fillText(ch, x, r * 28);
+    }
+  });
+}
+
+/* --- S5 globe --- */
+const POLYS = [
+  [[-17,21],[-16,28],[-10,30],[-6,36],[10,37],[11,33],[20,31],[25,32],[32,31],[34,28],[38,22],[43,12],[51,12],[51,10],[44,4],[40,-3],[39,-10],[41,-15],[35,-24],[33,-27],[27,-34],[20,-35],[18,-32],[12,-17],[13,-11],[9,-1],[9,4],[5,6],[-2,5],[-8,4],[-13,8],[-17,14]],
+  [[44,-12],[50,-15],[48,-25],[44,-24]],
+  [[-9,37],[-9,43],[-2,44],[-5,48],[2,51],[8,54],[10,58],[5,62],[15,69],[28,71],[40,67],[40,45],[28,41],[26,38],[20,40],[13,44],[16,38],[10,44],[3,42],[-5,36]],
+  [[-6,50],[-3,58],[1,53]],
+  [[35,30],[48,30],[57,24],[59,22],[52,16],[43,12],[39,21],[34,28]],
+  [[-80,9],[-72,12],[-60,10],[-50,0],[-35,-6],[-40,-22],[-48,-27],[-58,-35],[-65,-42],[-68,-53],[-73,-50],[-72,-35],[-71,-18],[-77,-10],[-81,-4],[-78,2]],
+  [[-168,65],[-140,70],[-95,72],[-80,62],[-60,52],[-66,44],[-76,35],[-81,25],[-90,29],[-97,26],[-105,20],[-92,15],[-83,9],[-78,8],[-88,14],[-106,23],[-112,31],[-118,34],[-124,40],[-124,48],[-135,58],[-150,60],[-165,60]],
+  [[40,67],[70,73],[110,77],[140,72],[170,68],[160,60],[140,55],[130,42],[122,40],[120,30],[110,20],[108,11],[100,14],[98,8],[92,22],[80,15],[77,8],[72,20],[66,25],[58,25],[48,30],[36,36],[28,41],[40,45]],
+  [[114,-22],[122,-18],[131,-12],[137,-12],[142,-11],[146,-19],[153,-27],[150,-37],[140,-38],[131,-31],[115,-34]],
+  [[-50,60],[-20,70],[-30,82],[-60,80],[-70,77]],
+];
+function pip(x, y, poly) { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c; } return c; }
+const GUINEA = [-11.4, 10.4];
+const isGN = (lo, la) => lo > -15 && lo < -7.6 && la > 7.3 && la < 12.6 && !(lo > -9 && la < 8.5);
+const DOTS = [];
+for (let la = -80; la <= 84; la += 2.1) {
+  const st = 2.1 / Math.max(.2, Math.cos(la * Math.PI / 180));
+  for (let lo = -180; lo < 180; lo += st) if (POLYS.some(p => pip(lo, la, p))) DOTS.push([lo, la, isGN(lo, la)]);
+}
+const gcv = $('gcv'), gx = gcv.getContext('2d');
+function proj(lo, la, lo0, la0) {
+  const r = Math.PI / 180, l = la * r, d = (lo - lo0) * r, l0 = la0 * r;
+  const cosc = Math.sin(l0) * Math.sin(l) + Math.cos(l0) * Math.cos(l) * Math.cos(d);
+  return [Math.cos(l) * Math.sin(d), -(Math.cos(l0) * Math.sin(l) - Math.sin(l0) * Math.cos(l) * Math.cos(d)), cosc];
+}
+function drawGlobe(t) {
+  const k = P(t, 21, 24.2), e = eio(k);
+  const lo0 = lerp(70, GUINEA[0] + 6, e), la0 = lerp(18, 6, e);
+  const cx = 860, cy = 520, R = lerp(330, 400, e);
+  gx.clearRect(0, 0, 1920, 1080);
+  // atmosphere
+  let g = gx.createRadialGradient(cx, cy, R * .7, cx, cy, R * 1.35);
+  g.addColorStop(0, 'rgba(255,110,30,0)'); g.addColorStop(.35, 'rgba(255,110,30,.35)'); g.addColorStop(1, 'rgba(255,90,20,0)');
+  gx.fillStyle = g; gx.beginPath(); gx.arc(cx, cy, R * 1.35, 0, 7); gx.fill();
+  g = gx.createRadialGradient(cx - R * .35, cy - R * .4, R * .1, cx, cy, R);
+  g.addColorStop(0, '#3a1a0e'); g.addColorStop(1, '#0d0605');
+  gx.fillStyle = g; gx.beginPath(); gx.arc(cx, cy, R, 0, 7); gx.fill();
+  // graticule
+  gx.strokeStyle = 'rgba(255,140,60,.12)'; gx.lineWidth = 1.2;
+  for (let lo = -180; lo < 180; lo += 30) { gx.beginPath(); let pen = false; for (let la = -90; la <= 90; la += 4) { const [x, y, z] = proj(lo, la, lo0, la0); if (z > 0) { pen ? gx.lineTo(cx + x * R, cy + y * R) : gx.moveTo(cx + x * R, cy + y * R); pen = true; } else pen = false; } gx.stroke(); }
+  for (let la = -60; la <= 60; la += 30) { gx.beginPath(); let pen = false; for (let lo = -180; lo <= 180; lo += 4) { const [x, y, z] = proj(lo, la, lo0, la0); if (z > 0) { pen ? gx.lineTo(cx + x * R, cy + y * R) : gx.moveTo(cx + x * R, cy + y * R); pen = true; } else pen = false; } gx.stroke(); }
+  // dots
+  const hl = P(t, 23.4, 24.2);
+  for (const [lo, la, gn] of DOTS) {
+    const [x, y, z] = proj(lo, la, lo0, la0); if (z <= 0) continue;
+    const a = .25 + .7 * z;
+    if (gn && hl > 0) { gx.fillStyle = `rgba(255,${200 - 80 * hl},${80 - 40 * hl},${a})`; gx.fillRect(cx + x * R - 2.6, cy + y * R - 2.6, 5.2, 5.2); }
+    else { gx.fillStyle = `rgba(255,170,90,${a * .8})`; gx.fillRect(cx + x * R - 1.8, cy + y * R - 1.8, 3.6, 3.6); }
+  }
+  // rim light
+  gx.strokeStyle = 'rgba(255,160,80,.55)'; gx.lineWidth = 2.5; gx.beginPath(); gx.arc(cx, cy, R, 0, 7); gx.stroke();
+  // orbit + comet
+  const ok = eo(P(t, 21.6, 23)), ang = -.42;
+  gx.save(); gx.translate(cx, cy); gx.rotate(ang);
+  gx.strokeStyle = `rgba(255,170,80,${.5 * ok})`; gx.lineWidth = 2.5; gx.beginPath(); gx.ellipse(0, 0, R * 1.42, R * .36, 0, 0, Math.PI * 2 * ok); gx.stroke();
+  const cph = t * 1.6;
+  for (let i = 0; i < 26; i++) { const th = cph - i * .035; const ex = Math.cos(th) * R * 1.42, ey = Math.sin(th) * R * .36; if (Math.sin(th) < 0 && Math.hypot(ex, ey) < R * 1.02) continue; gx.globalAlpha = ok * (1 - i / 26); gx.drawImage(sprite, ex - 22 + i * .4, ey - 22 + i * .4, 44 - i * .8, 44 - i * .8); }
+  gx.globalAlpha = 1; gx.restore();
+  // pin
+  const pk = P(t, 23.6, 24.3);
+  if (pk > 0) {
+    const [x, y, z] = proj(GUINEA[0], GUINEA[1], lo0, la0);
+    const sx = cx + x * R, sy = cy + y * R;
+    for (let i = 0; i < 3; i++) { const ph = ((t * .9 + i / 3) % 1); gx.strokeStyle = `rgba(255,90,40,${(1 - ph) * .9 * pk})`; gx.lineWidth = 3; gx.beginPath(); gx.arc(sx, sy, 10 + ph * 90, 0, 7); gx.stroke(); }
+    gx.fillStyle = '#fff'; gx.beginPath(); gx.arc(sx, sy, 9 * back(pk), 0, 7); gx.fill();
+    gx.globalCompositeOperation = 'lighter'; gx.drawImage(sprite, sx - 50, sy - 50, 100, 100); gx.globalCompositeOperation = 'source-over';
+    // line to card
+    const lk = eo(P(t, 24, 24.7)), ex = 1290, ey = 395;
+    gx.strokeStyle = 'rgba(255,170,90,.85)'; gx.lineWidth = 2.5; gx.setLineDash([10, 8]);
+    gx.beginPath(); gx.moveTo(sx, sy); gx.lineTo(lerp(sx, ex, lk), lerp(sy, ey, lk)); gx.stroke(); gx.setLineDash([]);
+  }
+}
+
+/* --- S8 shards --- */
+const bcv = $('bcv'), bx = bcv.getContext('2d');
+const R8 = rng(42), SH = Array.from({ length: 46 }, (_, i) => ({ a: i / 46 * 6.283 + R8() * .3, r: 380 + R8() * 160, s: 18 + R8() * 22, v: 700 + R8() * 900, rot: R8() * 6, vr: (R8() - .5) * 8, c: ['#ff7a1a', '#ffb347', '#ff3d2e', '#ffd27a'][i % 4], kind: i % 3 }));
+function shape(x, y, s, rot, kind, c, a) {
+  bx.save(); bx.translate(x, y); bx.rotate(rot); bx.globalAlpha = a; bx.fillStyle = c; bx.shadowColor = c; bx.shadowBlur = 18; bx.beginPath();
+  if (kind === 0) { for (let i = 0; i < 10; i++) { const rr = i % 2 ? s * .42 : s; const an = i * Math.PI / 5 - Math.PI / 2; bx.lineTo(Math.cos(an) * rr, Math.sin(an) * rr); } }
+  else if (kind === 1) { bx.moveTo(0, -s); bx.lineTo(s * .65, 0); bx.lineTo(0, s); bx.lineTo(-s * .65, 0); }
+  else { bx.roundRect(-s * .55, -s * .55, s * 1.1, s * 1.1, s * .25); }
+  bx.closePath(); bx.fill(); bx.restore();
+}
+function drawShards(t) {
+  bx.clearRect(0, 0, 1920, 1080);
+  const cx = 960, cy = 460, appear = eo(P(t, 40.2, 41));
+  for (const p of SH) {
+    if (t < 42.6) {
+      const an = p.a + t * .5, wob = Math.sin(t * 2 + p.a * 3) * 18;
+      shape(cx + Math.cos(an) * (p.r + wob) * 1.25, cy + Math.sin(an) * (p.r + wob) * .62, p.s * appear, p.rot + t * p.vr * .2, p.kind, p.c, appear * .9);
+    } else {
+      const dt = t - 42.6, an = p.a + 42.6 * .5;
+      const x = cx + Math.cos(an) * (p.r * 1.25 + p.v * dt * 1.3), y = cy + Math.sin(an) * (p.r * .62 + p.v * dt * .8) + 500 * dt * dt;
+      shape(x, y, p.s * (1 + dt * .4), p.rot + dt * p.vr, p.kind, p.c, cl(1 - dt / 2.4));
+    }
+  }
+  if (t >= 42.6 && t < 43.2) { const k = P(t, 42.6, 43.2); bx.strokeStyle = `rgba(255,200,140,${1 - k})`; bx.lineWidth = 10 * (1 - k); bx.beginPath(); bx.arc(cx, cy, 120 + k * 900, 0, 7); bx.stroke(); }
+}
+
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+/* --- master render --- */
+function render(t) {
+  t = cl(t, 0, DUR);
+  // camera shake
+  let sx = 0, sy = 0;
+  for (const [st, amp] of SHAKES) { const d = t - st; if (d >= 0 && d < .5) { const a = amp * Math.exp(-d * 9); sx += Math.sin(d * 90 + st) * a; sy += Math.cos(d * 73 + st * 2) * a; } }
+  $('cam').style.transform = `translate(${sx}px,${sy}px)`;
+
+  // background
+  $('floor').style.backgroundPosition = `0 ${(t * 160) % 110}px`;
+  $('ceil').style.backgroundPosition = `0 ${-(t * 160) % 110}px`;
+  const pulse = .85 + .15 * Math.sin(t * Math.PI * 2 * 2); // 120 bpm feel
+  $('bgglow').style.opacity = (t < 1.4 ? eo(P(t, 0, 1.4)) : 1) * (t >= 16 && t < 21 ? .55 : 1) * pulse;
+  $('floorwrap').style.opacity = eo(P(t, .2, 1.6));
+  $('ceilwrap').style.opacity = eo(P(t, .2, 1.6)) * (t > 16 && t < 21 ? .3 : 1);
+  drawParticles(t, t < 1 ? P(t, 0, 1) : 1);
+
+  // flash on cuts
+  let fl = 0;
+  for (const c of CUTS) { const d = t - c; if (d > -.12 && d < .45) fl = Math.max(fl, d < 0 ? (d + .12) / .12 * .6 : .6 * Math.exp(-d * 9)); }
+  if (t > 1.15 && t < 1.8) fl = Math.max(fl, .45 * Math.exp(-(t - 1.15) * 7));
+  if (t > 42.55 && t < 43.3) fl = Math.max(fl, .9 * Math.exp(-(t - 42.55) * 6));
+  $('flash').style.opacity = fl;
+
+  // global glitch bars around transitions into/out of terminal
+  const gl = (t > 15.55 && t < 16.2) || (t > 20.45 && t < 21.1) || (t > 12.35 && t < 12.6);
+  [...$('bars').children].forEach((d, i) => {
+    if (!gl) { d.style.opacity = 0; return; }
+    const f = Math.floor(t * 30), h = hash(f * 7 + i);
+    d.style.opacity = h > .35 ? .85 : 0; d.style.top = (hash(f * 3 + i * 11) * 1080) + 'px';
+    d.style.height = (4 + hash(f + i * 5) * 26) + 'px';
+    d.style.background = ['#ff7a1a', '#5fd1ff', '#ff3d2e', '#fff', '#52e08a', '#ffb347'][i];
+    d.style.transform = `translateX(${(hash(f * 13 + i) - .5) * 300}px)`;
+  });
+
+  // brand watermark
+  $('brand').style.opacity = eo(P(t, 2.6, 3.4)) * (1 - P(t, 45, 45.4));
+
+  /* S1 */
+  let e = env('s1', t, { manual: true });
+  if (e) {
+    const ko = e.ko;
+    $('s1').style.opacity = 1 - ko;
+    $('s1').style.transform = `scale(${1 + ko * .5})`;
+    $('s1').style.filter = ko > .01 ? `blur(${ko * 20}px)` : 'none';
+    const rk = back(P(t, .3, 1.25));
+    $('s1ring').style.transform = `scale(${rk * (1 + .02 * Math.sin(t * 4))}) rotate(${(1 - eo(P(t, .3, 1.25))) * -90}deg)`;
+    $('s1ring').style.opacity = P(t, .3, .6);
+    $('s1ring').style.background = `conic-gradient(from ${t * 120}deg,#ff3d2e,#ffb347,#ff7a1a,#ff3d2e)`;
+    $('rays').style.transform = `rotate(${t * 12}deg) scale(${.6 + .4 * eo(P(t, .9, 2))})`;
+    $('rays').style.opacity = eo(P(t, 1, 2));
+    nameSpans.forEach((s, i) => {
+      const k = eo5(P(t, 1.25 + i * .045, 1.85 + i * .045));
+      s.style.opacity = k; s.style.transform = `translateY(${(1 - k) * 80}px) scale(${lerp(1.6, 1, k)})`;
+      s.style.filter = k < .99 ? `blur(${(1 - k) * 14}px)` : 'none';
+    });
+    const lk = eo(P(t, 2.2, 3));
+    $('s1line').style.transform = `scaleX(${lk})`;
+    const sk = eo(P(t, 2.5, 3.3));
+    $('s1sub').style.opacity = sk; $('s1sub').style.letterSpacing = lerp(30, 10, sk) + 'px';
+    $('s1ring').style.top = lerp(400, 360, eo(P(t, 3.6, 5))) + 'px';
+  }
+
+  /* S2 chat */
+  e = env('s2', t, { si: .7, so: 1.3 });
+  if (e) {
+    const tilt = Math.sin(t * .7) * 4;
+    $('chat').style.transform = `perspective(1800px) rotateY(${-12 + tilt + (1 - e.ki) * 30}deg) rotateX(${6 - tilt * .4}deg) translateY(${(1 - e.ki) * 120}px)`;
+    const pops = [['m1', 6.6], ['m2', 7.7], ['m3', 9.5], ['m4', 10.9]];
+    for (const [id, st] of pops) { const k = P(t, st, st + .45); const el = $(id); el.style.opacity = eo(P(t, st, st + .15)); el.style.transform = `scale(${t < st ? .4 : back(k)}) translateY(${(1 - eo(k)) * 30}px)`; }
+    const typing = t < 8.5;
+    $('m2').querySelector('.typing').style.display = typing ? 'inline' : 'none';
+    $('m2').querySelector('.txt').style.display = typing ? 'none' : 'inline';
+    [...$('m2').querySelectorAll('.typing i')].forEach((d, i) => d.style.transform = `translateY(${Math.sin(t * 12 - i * 1.1) * -7}px)`);
+    if (!typing) { const k = P(t, 8.5, 8.85); $('m2').style.transform = `scale(${back(k) * .1 + .9 + (1 - k) * .0})`; }
+  }
+
+  /* S3 search */
+  e = env('s3', t, { si: 1.25, so: 1.6 });
+  if (e) {
+    const q = 'théodore carmel', n = Math.floor(P(t, 12.9, 14.2) * q.length);
+    const typed = q.slice(0, n);
+    $('sq').innerHTML = `<span class="a">${typed.slice(0, 8)}</span><span class="b">${typed.slice(8)}</span>`;
+    $('caret').style.opacity = (Math.floor(t * 3) % 2 === 0 || t < 14.3) ? 1 : 0;
+    $('sbar').style.transform = `translateY(${(1 - e.ki) * -60}px)`;
+    $('chips').style.opacity = eo(P(t, 13, 13.5));
+    const rk = P(t, 14.35, 14.8);
+    $('res').style.opacity = eo(rk); $('res').style.transform = `translateY(${(1 - eo(rk)) * -40}px) scaleY(${lerp(.6, 1, eo(rk))})`; $('res').style.transformOrigin = '50% 0';
+    const hov = P(t, 14.9, 15.1);
+    $('r1').style.background = `rgba(255,122,26,${.18 * hov})`;
+    // cursor path
+    const ck = eio(P(t, 14.4, 15.05)), click = P(t, 15.15, 15.35);
+    const cx = lerp(1700, 1385, ck), cy = lerp(960, 600, ck);
+    const cs = click > 0 && click < 1 ? 1 - .25 * Math.sin(click * Math.PI) : 1;
+    $('cursor').style.left = cx + 'px'; $('cursor').style.top = cy + 'px';
+    $('cursor').style.transform = `scale(${cs})`; $('cursor').style.opacity = P(t, 14.3, 14.5);
+    $('r1').querySelector('.go').style.transform = `scale(${click > 0 && click < 1 ? 1 - .1 * Math.sin(click * Math.PI) : 1})`;
+  }
+
+  /* S4 terminal */
+  e = env('s4', t, { si: 1.05, so: .6, ti: .25, to: .45 });
+  if (e) {
+    drawRain(t);
+    renderTerm(t);
+    $('tprog').firstElementChild.style.width = (eo(P(t, 19.95, 20.7)) * 100) + '%';
+    const g = (t < 16.35) || (t > 20.45);
+    const f = Math.floor(t * 30);
+    $('term').style.transform = g ? `translateX(${(hash(f) - .5) * 40}px) skewX(${(hash(f + 3) - .5) * 8}deg)` : 'none';
+    $('tl').style.textShadow = g ? `${(hash(f + 1) - .5) * 14}px 0 #ff3d2e, ${(hash(f + 2) - .5) * -14}px 0 #5fd1ff` : '0 0 12px rgba(255,140,60,.35)';
+    [...$('tbars').children].forEach((d, i) => {
+      if (!g) { d.style.opacity = 0; return; }
+      d.style.opacity = hash(f * 5 + i) > .3 ? .7 : 0; d.style.top = (150 + hash(f * 9 + i) * 760) + 'px'; d.style.height = (3 + hash(f + i) * 18) + 'px';
+      d.style.left = (290 + hash(f * 2 + i) * 200) + 'px'; d.style.right = (290 + hash(f * 4 + i) * 200) + 'px';
+      d.style.background = ['#ff7a1a', '#5fd1ff', '#fff', '#ff3d2e', '#52e08a', '#ffb347', '#d291ff'][i];
+    });
+  }
+
+  /* S5 globe */
+  e = env('s5', t, { si: .6, so: 1.4 });
+  if (e) {
+    drawGlobe(t);
+    const lines = ['<span class="t">LOCALISATION ●</span>', 'LAT 9.94  LON -11.40', 'PAYS  GUINÉE (GN)', 'CIBLE Théodore Carmel', 'PORTÉE INTERNATIONALE'];
+    const nl = Math.floor(P(t, 21.4, 23.2) * lines.length + .001);
+    $('hud').innerHTML = lines.slice(0, Math.max(1, nl)).join('<br>');
+    $('hud').style.opacity = eo(P(t, 21.3, 21.7));
+    const ck = P(t, 24.2, 24.7);
+    $('gcard').style.opacity = eo(ck); $('gcard').style.transform = `translateX(${(1 - eo(ck)) * 80}px) scale(${lerp(.85, 1, back(ck))})`;
+    $('c1').className = t > 23.8 ? 'on' : ''; $('c1').style.opacity = t > 22 ? 1 : .3;
+    $('c2').style.opacity = t > 24.4 ? 1 : .3; $('c3').style.opacity = t > 25 ? 1 : .3;
+    $('c3').className = t > 25 ? 'on' : '';
+    $('crumb').style.opacity = eo(P(t, 21.8, 22.3));
+  }
+
+  /* S6 Adobe */
+  e = env('s6', t, { si: 1.2, so: .85 });
+  if (e) {
+    $('s6t').style.opacity = eo(P(t, 26.2, 26.7)); $('s6t').style.transform = `translateY(${(1 - eo(P(t, 26.2, 26.8))) * -50}px)`;
+    const tiles = [...$('tiles').children];
+    const lv = [.96, .93, .97, .9, .85];
+    tiles.forEach((tl, i) => {
+      const st = 26.75 + i * .38, k = P(t, st, st + .7), ek = eo5(k);
+      const fl = Math.sin(t * 1.6 + i) * 10 * P(t, st + .7, st + 1.2);
+      tl.style.opacity = eo(P(t, st, st + .2));
+      tl.style.transform = `translateZ(${(1 - ek) * -1400}px) rotateY(${(1 - ek) * 120}deg) translateY(${fl}px)`;
+      tl.querySelector('.bar i').style.width = (eo(P(t, st + .6, st + 1.5)) * lv[i] * 100) + '%';
+      tl.querySelector('.app').style.setProperty('--sh', `${lerp(-120, 120, eio(P(t, 30.2 + i * .12, 30.9 + i * .12)))}%`);
+    });
+    const fk = P(t, 29.6, 30.2);
+    $('s6foot').style.opacity = eo(fk); $('s6foot').style.transform = `translateY(${(1 - eo(fk)) * 30}px)`;
+  }
+
+  /* S7 profile */
+  e = env('s7', t, { si: .85, so: 1.25 });
+  if (e) {
+    const rk = P(t, 33.2, 33.9);
+    $('pfring').style.transform = `scale(${back(rk)})`; $('pfring').style.opacity = eo(rk);
+    $('pfring').style.background = `conic-gradient(from ${t * 120}deg,#ff3d2e,#ffb347,#ff7a1a,#ff3d2e)`;
+    [['pfname', 33.5], ['pfrole', 33.75], ['pfchip', 34], ['bio', 35.2], ['cta7', 35.5]].forEach(([id, st]) => {
+      const k = eo(P(t, st, st + .5)); $(id).style.opacity = k; $(id).style.transform = `translateX(${(1 - k) * -60}px)`;
+    });
+    const sk = P(t, 34.3, 35.4);
+    $('stats').style.opacity = eo(P(t, 34.2, 34.5));
+    $('st1').textContent = Math.round(eo(sk) * 3);
+    $('st2').textContent = Math.round(eo(sk) * 5);
+    $('st3').textContent = Math.round(eo(sk) * 100) + '%';
+    const cp = .5 + .5 * Math.sin((t - 36) * 5);
+    $('cta7').style.boxShadow = `0 0 ${30 + cp * 50}px rgba(255,100,30,${.35 + .35 * cp})`;
+    [...$('grid7').children].forEach((th, i) => {
+      const st = 34.2 + i * .22, k = P(t, st, st + .6);
+      th.style.opacity = k > 0 ? 1 : 0;
+      th.style.transform = `rotateY(${(1 - eo(k)) * 90}deg) translateY(${Math.sin(t * 1.4 + i) * 6}px)`;
+    });
+  }
+
+  /* S8 counter */
+  e = env('s8', t, { si: 1.3, so: 1.5, to: .4 });
+  if (e) {
+    drawShards(t);
+    const pre = t < 42.6;
+    if (pre) {
+      $('num').textContent = fmt(Math.round(eo(P(t, 40.3, 42.3)) * 1095));
+      $('nlab').textContent = 'JOURS DE CRÉATION';
+      $('num').style.transform = `scale(${1 + .04 * Math.sin(t * 10) * P(t, 41.5, 42.5)})`;
+    } else {
+      const k = P(t, 42.6, 43.1);
+      $('num').textContent = '3 ANS';
+      $('nlab').textContent = "D'EXPÉRIENCE";
+      $('num').style.transform = `scale(${lerp(1.8, 1, eo5(k))})`;
+    }
+    $('num').style.fontSize = pre ? '300px' : '320px';
+    $('nlab').style.opacity = eo(P(t, 40.5, 41)) * (pre ? 1 : eo(P(t, 42.7, 43.1)));
+    $('nlab').style.letterSpacing = (pre ? 18 : lerp(40, 18, eo(P(t, 42.7, 43.3)))) + 'px';
+    $('nsub').style.opacity = eo(P(t, 43.3, 43.8));
+  }
+
+  /* S9 outro */
+  e = env('s9', t, { si: .8, to: .01 });
+  if (e) {
+    const rk = P(t, 45.3, 46);
+    $('oring').style.transform = `scale(${back(rk)})`; $('oring').style.opacity = eo(rk);
+    $('oring').style.background = `conic-gradient(from ${t * 120}deg,#ff3d2e,#ffb347,#ff7a1a,#ff3d2e)`;
+    const nk = eo5(P(t, 45.5, 46.4));
+    $('oname').style.opacity = nk; $('oname').style.letterSpacing = lerp(60, 14, nk) + 'px';
+    $('oname').style.filter = nk < .99 ? `blur(${(1 - nk) * 16}px)` : 'none';
+    $('orole').style.opacity = eo(P(t, 46.2, 46.7));
+    const pk = P(t, 46.6, 47.2);
+    const hb = t > 47.6 ? 1 + .035 * Math.max(0, Math.sin((t - 47.6) * Math.PI * 2)) : 1;
+    $('ophone').style.opacity = eo(pk); $('ophone').style.transform = `scale(${back(pk) * hb})`;
+    $('ocall').style.opacity = eo(P(t, 47.2, 47.7));
+    [...$('oapps').children].forEach((a, i) => { const k = P(t, 47.6 + i * .12, 48 + i * .12); a.style.opacity = eo(k); a.style.transform = `translateY(${(1 - back(k)) * 40}px)`; });
+    $('oloc').style.opacity = eo(P(t, 48.3, 48.8));
+  }
+  $('blackout').style.opacity = eio(P(t, 50.1, 51));
+}
+window.render = render;
+
+/* --- player mode --- */
+const params = new URLSearchParams(location.search);
+function fit() { const s = Math.min(innerWidth / 1920, innerHeight / 1080); const st = $('stage'); st.style.transform = `scale(${s})`; st.style.left = (innerWidth - 1920 * s) / 2 + 'px'; st.style.top = (innerHeight - 1080 * s) / 2 + 'px'; }
+if (!params.has('render')) {
+  document.body.classList.add('player'); addEventListener('resize', fit); fit();
+  const audio = new Audio('audio/soundtrack.mp3');
+  let t0 = null, playing = false;
+  const loop = now => { if (playing) { const t = audio.currentTime || (now - t0) / 1000; render(t % DUR); } requestAnimationFrame(loop); };
+  render(0); requestAnimationFrame(loop);
+  const start = () => { if (playing) return; playing = true; t0 = performance.now(); audio.currentTime = 0; audio.play().catch(() => {}); };
+  addEventListener('click', start); addEventListener('keydown', start);
+  audio.addEventListener('ended', () => { audio.currentTime = 0; audio.play(); });
+} else render(0);
+</script>
+</body>
+</html>
